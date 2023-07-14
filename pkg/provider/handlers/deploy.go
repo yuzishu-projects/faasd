@@ -137,6 +137,14 @@ func deploy(ctx context.Context, req types.FunctionDeployment, client *container
 		})
 	}
 
+	// --mount type=bind,src=/home/yuzishu/share_folder,dst=/home/yuzishu/share_folder,options=rbind:rw
+	mounts = append(mounts, specs.Mount{
+		Destination: "/home/yuzishu/share_folder",
+		Type:        "bind",
+		Source:      "/home/yuzishu/share_folder",
+		Options:     []string{"rbind", "rw"},
+	})
+
 	name := req.Service
 
 	labels, err := buildLabels(&req)
@@ -163,6 +171,7 @@ func deploy(ctx context.Context, req types.FunctionDeployment, client *container
 		containerd.WithSnapshotter(snapshotter),
 		containerd.WithNewSnapshot(name+"-snapshot", image),
 		containerd.WithNewSpec(oci.WithImageConfig(image),
+			oci.WithHostNamespace(specs.NetworkNamespace),
 			oci.WithHostname(name),
 			oci.WithCapabilities([]string{"CAP_NET_RAW"}),
 			oci.WithMounts(mounts),
