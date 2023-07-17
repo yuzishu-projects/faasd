@@ -145,6 +145,13 @@ func deploy(ctx context.Context, req types.FunctionDeployment, client *container
 		Options:     []string{"rbind", "rw"},
 	})
 
+	mounts = append(mounts, specs.Mount{
+		Destination: "/dev/shm/ipdos_manager_log",
+		Type:        "bind",
+		Source:      "/dev/shm/ipdos_manager_log",
+		Options:     []string{"rbind", "rw"},
+	})
+
 	name := req.Service
 
 	labels, err := buildLabels(&req)
